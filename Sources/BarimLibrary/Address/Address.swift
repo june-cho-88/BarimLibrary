@@ -11,6 +11,7 @@ protocol Address {
 }
 
 enum AddressError: Error {
-    case invalid
+    case failed(error: Error)
+    case invalid(error: Error)
     case notAvailable(scriptFormat: Script.Format)
 }

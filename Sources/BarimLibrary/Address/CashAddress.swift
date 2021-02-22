@@ -10,17 +10,30 @@ import Foundation
 struct CashAddress {
     let legacy: LegacyAddress
     
-    let prefix: Prefix
+    let network: Network
+    
     var versionBytes: Data {
         Data([firstBit+typeBits+sizeBits])
     }
+    
     var payload: Data {
         return versionBytes + legacy.data
     }
+    
+    var prefix: String {
+        switch self.network {
+        case .mainnet: return "bitcoincash"
+        case .testnet: return "bchtest"
+        case .regtest: return "bchreg"
+        }
+    }
+    
+    let separator: String = ":"
+    
     var checksum: UInt {
         var jar: Data = Data()
         
-        for byte in Array<UInt8>(prefix.rawValue.utf8) {
+        for byte in Array<UInt8>(prefix.utf8) {
             jar += Data([byte & 0b00011111])
         }
         jar += Data(repeating: 0, count: 1)
@@ -33,19 +46,15 @@ struct CashAddress {
     var string: String {
         let base32Payload = Base32().encode(payload)
         let base32Checksum = Base32().encode(Int(checksum))
-        let result = prefix.rawValue + prefix.separator + base32Payload + base32Checksum
+        let result = prefix + separator + base32Payload + base32Checksum
         return result
     }
 }
 
 extension CashAddress {
-    enum Prefix: String {
-        case mainnet = "bitcoincash"
-        case testnet = "bchtest"
-        case regtest = "bchreg"
-        var separator: String { ":" }
+    enum Network {
+        case mainnet, testnet, regtest
     }
-    
     var dataSize: Int {
         return self.legacy.data.count
     }

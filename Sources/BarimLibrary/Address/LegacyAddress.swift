@@ -37,7 +37,7 @@ struct LegacyAddress {
             return publicKey.hash160
         case .p2sh:
             return publicKey.hash160
-        default: fatalError()
+        default: fatalError(AddressError.notAvailable(scriptFormat: scriptFormat).localizedDescription)
         }
     }
     
