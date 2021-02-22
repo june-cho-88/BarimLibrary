@@ -19,8 +19,8 @@ struct PrivateKey {
         self.data = Data(bytes)
     }
     
-    init?(seedString: String) {
-        guard let seedData = seedString.data(using: .utf8) else { return nil }
+    init(seedString: String) throws {
+        guard let seedData = seedString.data(using: .utf8) else { throw AddressError.invalid("Failed to get 256bit integer from seed string.") }
         self.data = Data(SHA256.hash(data: seedData))
     }
 }
